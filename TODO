@@ -1,0 +1,16 @@
+add apikey to endpoints
+add oauth2 to endpoints  
+docker configuration
+swagger verification
+apidefinition.yaml
+readme
+git configurations
+git actions
+aws configuration
+aws sqs listener
+aws sqs publisher with topics
+aws ecr or kubernetes
+upload docker image
+run on aws cloud or another free cloud service
+postman Tests
+integrate postman tests with git actions

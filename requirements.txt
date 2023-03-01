@@ -1,0 +1,7 @@
+pytest
+flake8
+black
+fastapi[all]
+pydantic
+pylint
+isort
