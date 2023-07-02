@@ -6,6 +6,7 @@ from src.main.user.adapter.controller.mapper.mapperToView import mapper
 from src.main.user.usecase.CreateUserUseCase import CreateUserUseCase
 from src.main.user.usecase.GetUserByIdUseCase import GetUserByIdUseCase
 from src.main.user.usecase.UpdateUserUseCase import UpdateUserUseCase
+from src.main.user.usecase.GetAllUsersUseCase import GetAllUsersUseCase
 
 router = APIRouter()
 
@@ -25,6 +26,13 @@ async def createUser(user: UserRequest):
 async def getUser(userId: str):
     user = GetUserByIdUseCase().execute(userId)
     return mapper().toGetUserView(user)
+
+
+@router.get("/user")
+@AdminAuthorization
+async def getAllUsers(request: Request):
+    users = GetAllUsersUseCase().execute()
+    return mapper().toGetAllUsersView(users)
 
 
 @router.put("/user")

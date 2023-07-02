@@ -14,3 +14,6 @@ class InMemoryUserRepository(UserRepository):
 
     def update(self, user: User) -> None:
         self._users.get(user.id)
+
+    def getAll(self) -> list[User]:
+        return self._users
