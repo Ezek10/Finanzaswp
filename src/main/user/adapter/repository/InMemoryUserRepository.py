@@ -1,5 +1,5 @@
-from main.user.domain.model.User import User
-from main.user.domain.port.repository.UserRepository import UserRepository
+from src.main.user.domain.model.User import User
+from src.main.user.domain.port.repository.UserRepository import UserRepository
 
 
 class InMemoryUserRepository(UserRepository):
@@ -14,3 +14,6 @@ class InMemoryUserRepository(UserRepository):
 
     def update(self, user: User) -> None:
         self._users.get(user.id)
+
+    def getAll(self) -> list[User]:
+        return self._users

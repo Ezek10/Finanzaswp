@@ -1,33 +1,41 @@
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Request, status
 
+from src.main.common.domain.authorization.adminAuth import AdminAuthorization
 from src.main.user.adapter.controller.request.UserRequest import UserRequest
-from src.main.user.adapter.controller.response.GetUserView import GetUserView
+from src.main.user.adapter.controller.mapper.mapperToView import mapper
 from src.main.user.usecase.CreateUserUseCase import CreateUserUseCase
 from src.main.user.usecase.GetUserByIdUseCase import GetUserByIdUseCase
 from src.main.user.usecase.UpdateUserUseCase import UpdateUserUseCase
+from src.main.user.usecase.GetAllUsersUseCase import GetAllUsersUseCase
 
 router = APIRouter()
 
 
 @router.get("/")
 async def home():
-    return JSONResponse(status_code=200, content="Application UP!")
+    return status.HTTP_200_OK
 
 
 @router.post("/user")
 async def createUser(user: UserRequest):
-    CreateUserUseCase().execute(user.toCommand())
-    return JSONResponse(status_code=200, content=None)
+    CreateUserUseCase().execute(user.toDomain())
+    return status.HTTP_200_OK
 
 
 @router.get("/user/{userId}")
 async def getUser(userId: str):
     user = GetUserByIdUseCase().execute(userId)
-    return GetUserView(user)
+    return mapper().toGetUserView(user)
+
+
+@router.get("/user")
+@AdminAuthorization
+async def getAllUsers(request: Request):
+    users = GetAllUsersUseCase().execute()
+    return mapper().toGetAllUsersView(users)
 
 
 @router.put("/user")
 async def updateUser(user: UserRequest):
-    UpdateUserUseCase().execute(user.toCommand())
-    return JSONResponse(status_code=204)
+    UpdateUserUseCase().execute(user.toDomain())
+    return status.HTTP_201_CREATED

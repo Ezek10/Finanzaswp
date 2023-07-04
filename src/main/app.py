@@ -9,5 +9,5 @@ app.include_router(userRouter)
 
 
 @app.exception_handler(Exception)
-async def ExceptionsHandler(request: Request, exception: Exception) -> JSONResponse:
+def ExceptionsHandler(request: Request, exception: Exception) -> JSONResponse:
     return ProcessException(request, exception)

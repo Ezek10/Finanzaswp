@@ -2,19 +2,24 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from src.main.user.domain.port.command.UserCommand import UserCommand
+from src.main.user.domain.model.User import User
+from src.main.user.domain.enums.UserType import UserType
 
+class userContactRequest(BaseModel):
+    email: Optional[str]
+    linkedin: Optional[str]
+    phone: Optional[int]
 
 class UserRequest(BaseModel):
-    id: str
     name: str
     company: Optional[str]
-    contact: Optional[str]
+    contact: userContactRequest
     
-    def toCommand(self):
-        return UserCommand(
-            id = self.id,
+    def toDomain(self):
+        return User(
+            id = self.name,
             name = self.name,
             company=self.company,
-            contact=self.contact
+            contact=self.contact,
+            type=UserType.PJ if self.company is not None else UserType.PF,
         )
