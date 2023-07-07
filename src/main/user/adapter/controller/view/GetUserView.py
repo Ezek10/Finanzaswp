@@ -5,11 +5,9 @@ from pydantic import BaseModel
 
 class UserContact(BaseModel):
     email: Optional[str]
-    linkedin: Optional[str]
-    phone: Optional[int]
+    phone: int
 
 class GetUserView(BaseModel):
     id: str
-    name: str
-    company: Optional[str]
+    name: Optional[str]
     contact: UserContact
