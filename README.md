@@ -1,4 +1,4 @@
-# Fast-API web page for my resume and learning
+# Fast-API web service for a finance app with WhatsApp
 
 ---
 

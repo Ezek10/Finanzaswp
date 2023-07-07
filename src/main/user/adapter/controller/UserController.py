@@ -8,34 +8,29 @@ from src.main.user.usecase.GetUserByIdUseCase import GetUserByIdUseCase
 from src.main.user.usecase.UpdateUserUseCase import UpdateUserUseCase
 from src.main.user.usecase.GetAllUsersUseCase import GetAllUsersUseCase
 
-router = APIRouter()
+router = APIRouter(prefix="/user")
 
 
-@router.get("/")
-async def home():
-    return status.HTTP_200_OK
-
-
-@router.post("/user")
+@router.post("")
 async def createUser(user: UserRequest):
     CreateUserUseCase().execute(user.toDomain())
     return status.HTTP_200_OK
 
 
-@router.get("/user/{userId}")
+@router.get("/{userId}")
 async def getUser(userId: str):
     user = GetUserByIdUseCase().execute(userId)
     return mapper().toGetUserView(user)
 
 
-@router.get("/user")
+@router.get("")
 @AdminAuthorization
 async def getAllUsers(request: Request):
     users = GetAllUsersUseCase().execute()
     return mapper().toGetAllUsersView(users)
 
 
-@router.put("/user")
+@router.put("")
 async def updateUser(user: UserRequest):
     UpdateUserUseCase().execute(user.toDomain())
     return status.HTTP_201_CREATED
