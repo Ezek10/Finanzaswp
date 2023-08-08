@@ -1,5 +1,16 @@
 # FinanzasWP
 
+## Table of Contents
+
+* [Descripción](#descripción)
+* [Requisitos](#requisitos)
+* [Docker](#docker)
+* [Instalación](#instalación)
+* [Uso](#uso)
+* [Debbug in VSCode](#debbug-in-vscode)
+* [Tests](#tests)
+* [Cómo contribuir](#cómo-contribuir)
+
 ## Descripción
 
 Este proyecto esta destinado a realizar un repositorio de ejemplo con la utilizacion de FastAPI y el uso de una arquitectura hexagonal
@@ -7,6 +18,12 @@ o arquitectura domain-adapter.
 Como caso de uso se realizo una aplicacion de finanzas personales con la particularidad que recibe y envia informacion por Whatsapp.
 Para ello se creo una cuenta de Meta con el objetivo de interactuar con la API de Whatsapp.
 Esta aplicacion requiere de una cuenta verificada de Meta Buisness con datos legales de la empresa para ponerla en funcionamiento pleno, por ello es que no se encuentra en produccion. (Cualquier ayuda es bienvenida)
+
+## Requirements
+
+* Python 3.10
+* Docker
+* Docker Compose
 
 ## Docker
 
@@ -16,13 +33,13 @@ Descarga la imagen
 
 Ahora corre la imagen
 
-    docker run --name finanzaswp --rm -p 8000:80 ezemarcel/talana_app
+    docker run --name finanzaswp --rm -p 8000:80 ezemarcel/finanzaswp
 
 ## Instalación
 
 Clone el repositorio: 
 
-    git clone https://github.com/Ezek10/interview_1.git
+    git clone https://github.com/Ezek10/Finanzaswp.git
 
 Cree una unidad virtual: 
 
@@ -40,44 +57,51 @@ Instale las dependencias:
 
 Para correr el programa corra:
 
-    uvicorn src.app:app
+    uvicorn src.main.app:app --env-file .env-dev
 
 o
 
     make run
 
-y luego realice la siguiente request:
+y luego realice la siguiente request para verificar si esta corriendo:
 
-    curl --location 'localhost:8000/fight' \
+    curl --location 'http://localhost:8000/status'
+
+y luego puede probar con el siguiente para verificar su funcionamiento (reemplazar el PHONE_NUMBER y TIMESTAMP)
+
+    curl --location 'http://localhost:8000/whats_app' \
     --header 'Content-Type: application/json' \
     --data '{
-        "player1":
-            {
-                "movimientos": ["SDa", "DSD", "SA", "DSD"],
-                "golpes":["K", "P", "K", "P"]
-            }, 
-        "player2":
-            {
-                "movimientos":["DSD", "WSA", "ASA", "", "ASA", "SA"],
-                "golpes":["P", "K", "K", "K", "P", "k"]
-            }
-    } '
-
-
-respuesta esperada:
-
-    [
-        "¡El combate comenzo! Tonyn Stallone dara el primer golpe",
-        "Tonyn Stallone dio una gran patada",
-        "Arnaldor Shuatseneguer dio un puñetazo",
-        "Tonyn Stallone lo revento con un Taladoken",
-        "Arnaldor Shuatseneguer lo revento con un Remuyuken",
-        "Tonyn Stallone dio una gran patada",
-        "Arnaldor Shuatseneguer lo revento con un Remuyuken",
-        "Tonyn Stallone murio, sus familiares van a llorarlo toda su vida",
-        "Arnaldor Shuatseneguer sobrevivio, y le quedo 1 energia"
-    ]
-
+        "object": "whatsapp_business_account",
+        "entry": [{
+            "id": "WHATSAPP_BUSINESS_ACCOUNT_ID",
+            "changes": [{
+                "value": {
+                    "messaging_product": "whatsapp",
+                    "metadata": {
+                        "display_phone_number": "PHONE_NUMBER",
+                        "phone_number_id": "PHONE_NUMBER_ID"
+                    },
+                    "contacts": [{
+                        "profile": {
+                        "name": "NAME"
+                        },
+                        "wa_id": "PHONE_NUMBER"
+                    }],
+                    "messages": [{
+                        "from": "PHONE_NUMBER",
+                        "id": "wamid.ID",
+                        "timestamp": "TIMESTAMP",
+                        "text": {
+                        "body": "listar categorias"
+                        },
+                        "type": "text"
+                    }]
+                },
+                "field": "messages"
+            }]
+        }]
+    }'
 
 ## Debbug in VSCode
 
@@ -93,15 +117,16 @@ Copiar el siguiente codigo en .vscode/launch.json
                 "request": "launch",
                 "program": "${workspaceFolder}/.venv/Scripts/uvicorn.exe",
                 "args": [
-                    "src.app:app"
+                    "src.main.app:app"
                 ],
                 "console": "integratedTerminal",
-                "justMyCode": true
+                "justMyCode": true,
+                "envFile": "${workspaceFolder}/.env-dev"
             }
         ]
     }
 
-## Tests
+## Tests (TODO)
 
 Para correr los tests de esta aplicacion se recomienda usar el siguiente comando 
 
@@ -115,12 +140,7 @@ puede abrir el archivo **htmlcov/index.html** para ver el coverage generado de l
 
 ## Cómo contribuir
 
-Si bien este proyecto solo implica los conocimientos al momento de hacer esta entrevista creo que siempre puede ser bueno saber como se puede mejorar una entrega de este tipo, desde la funcionalidad del codigo, los tests hasta la documentacion o la presentacion del corriente archivo.
+Cualquier idea que sea para mejorar el proyecto o simplemente implementar algo que aporte a todos los que lo lean es bienvenido, siempre la idea
+es tener un proyecto que sirva como template donde uno pueda usar las cosas implementadas aqui, desde arquitecturas nuevas hasta uso de nuevas tecnologias.
 
 Si alguien se siente en capacidad de aportar sientase libre de crear una rama nueva y con un PR aportar sus ideas para mejorar esta presentacion
-
-## Notas
-
-- En la documentacion del ejercicio, el primer ejemplo aportado considere que tiene un error en el 3 comando de ataque del player 1, ya que menciona un ataque mientras que en los comandos no aporta ningun ataque
-
-- Si bien hay algunas cosas que se podrian implementar no se hizo debido al alcance del ejercicio como Github Actions para realizar un Coverage Badge

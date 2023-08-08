@@ -11,7 +11,7 @@ help:
 	@echo "format: format code with isort, black, pylint, flake8"
 
 run:
-	uvicorn src.main.app:app --reload
+	uvicorn src.main.app:app --reload --env-file .env-dev
 
 isort:
 	isort src
