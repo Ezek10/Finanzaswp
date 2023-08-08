@@ -7,5 +7,4 @@ pylint
 isort
 psycopg2
 sqlalchemy
-
-#prueba
+requests
