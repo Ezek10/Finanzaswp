@@ -5,3 +5,6 @@ fastapi[all]
 pydantic
 pylint
 isort
+psycopg2
+sqlalchemy
+requests
