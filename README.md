@@ -1,5 +1,17 @@
 # FinanzasWP
 
+## Table of Contents
+
+* [Descripción](#descripción)
+* [Requisitos](#requisitos)
+* [Docker](#docker)
+* [Instalación](#instalación)
+* [Uso](#uso)
+* [Debbug in VSCode](#debbug-in-vscode)
+* [Tests](#tests)
+* [Cómo contribuir](#cómo-contribuir)
+* [Notas](#notas)
+
 ## Descripción
 
 Este proyecto esta destinado a realizar un repositorio de ejemplo con la utilizacion de FastAPI y el uso de una arquitectura hexagonal
@@ -7,6 +19,12 @@ o arquitectura domain-adapter.
 Como caso de uso se realizo una aplicacion de finanzas personales con la particularidad que recibe y envia informacion por Whatsapp.
 Para ello se creo una cuenta de Meta con el objetivo de interactuar con la API de Whatsapp.
 Esta aplicacion requiere de una cuenta verificada de Meta Buisness con datos legales de la empresa para ponerla en funcionamiento pleno, por ello es que no se encuentra en produccion. (Cualquier ayuda es bienvenida)
+
+## Requirements
+
+* Python 3.10
+* Docker
+* Docker Compose
 
 ## Docker
 
@@ -66,17 +84,7 @@ y luego realice la siguiente request:
 
 respuesta esperada:
 
-    [
-        "¡El combate comenzo! Tonyn Stallone dara el primer golpe",
-        "Tonyn Stallone dio una gran patada",
-        "Arnaldor Shuatseneguer dio un puñetazo",
-        "Tonyn Stallone lo revento con un Taladoken",
-        "Arnaldor Shuatseneguer lo revento con un Remuyuken",
-        "Tonyn Stallone dio una gran patada",
-        "Arnaldor Shuatseneguer lo revento con un Remuyuken",
-        "Tonyn Stallone murio, sus familiares van a llorarlo toda su vida",
-        "Arnaldor Shuatseneguer sobrevivio, y le quedo 1 energia"
-    ]
+    []
 
 
 ## Debbug in VSCode
@@ -96,7 +104,8 @@ Copiar el siguiente codigo en .vscode/launch.json
                     "src.app:app"
                 ],
                 "console": "integratedTerminal",
-                "justMyCode": true
+                "justMyCode": true,
+                "envFile": "${workspaceFolder}/.env-dev"
             }
         ]
     }
