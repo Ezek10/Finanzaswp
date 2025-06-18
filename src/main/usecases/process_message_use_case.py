@@ -21,21 +21,31 @@ class ProcessMessageUseCase:
         words_transfer = ["transferi", "retire"]
         words_list = ["listar", "traer", "mostrar"]
         message = message.lower()
+        print(f"Phone: {phone}")
+        print(f"Message: {message}")
         if self._words_in_message(words_configuration, message):
+            print("Processing Configuration")
             message_to_send = self._proccess_configuration(phone, message)
         elif self._words_in_message(words_create, message):
+            print("Processing create")
             message_to_send = self._proccess_create(phone, message)
         elif self._words_in_message(words_ingreso, message):
+            print("Processing ingreso")
             message_to_send = self._proccess_ingreso(phone, message, date)
         elif self._words_in_message(words_transfer, message):
+            print("Processing transfer")
             message_to_send = self._proccess_transfer(phone, message, date)
         elif self._words_in_message(words_spend, message):
+            print("Processing spend")
             message_to_send = self._proccess_spend(phone, message, date)
         elif self._words_in_message(words_list, message):
+            print("Processing list")
             message_to_send = self._proccess_list(phone, message)
         elif self._words_in_message(words_delete, message):
+            print("Processing delete")
             message_to_send = self._proccess_delete(phone, message)
         else:
+            print("Processing help")
             message_to_send = self._proccess_help()
         if message_to_send is not None:
             send_message(phone, message_to_send)

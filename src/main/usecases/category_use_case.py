@@ -9,12 +9,14 @@ class CategoryUseCase:
         user = User(phone=phone)
         if Database.user_exist(user=user) is False:
             UserUseCase().create(user=user)
+        print(f"Creating Category: {category.name}")
         Database.create_category(phone=phone, category=category)
 
     def delete(self, phone: str, category: Category):
         user = User(phone=phone)
         if Database.user_exist(user=user) is False:
             UserUseCase().create(user=user)
+        print(f"Deleting Category: {category.name}")
         Database.delete_category(phone=phone, category=category)
 
     def get_all(self, phone: str):

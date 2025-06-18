@@ -12,15 +12,14 @@ router = APIRouter(prefix="/whats_app")
 
 @router.get("")
 async def verification(request: Request):
-    print(request.query_params)
+    print(f"Query params: {request.query_params}")
     response = request.query_params["hub.challenge"]
     return Response(status_code=200, content=response)
 
 
 @router.post("")
 async def read_message(request: WPRequest):
-    print("-------------REQUEST-----------")
-    print(request)
+    print(f"Request: {request}")
     message = request.entry[0].changes[0].value.messages[0]
     phone = message.from_
     timestamp = int(message.timestamp)

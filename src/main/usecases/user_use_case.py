@@ -5,6 +5,7 @@ from src.main.domain.schema.user import User
 
 class UserUseCase:
     def create(self, user: User):
+        print(f"Creating user {User.phone}")
         Database.create_user(user=user)
         message = """Hola!, veo que eres nuevo por aqui.
 La idea es que me puedas hablar para anotar tus gastos y manejar tus finanzas
@@ -29,9 +30,11 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
 
     def update(self, user: User):
         if Database.user_exist(user) is False:
-            UserUseCase().create(user=user)
+            self.create(user=user)
+        print("Updating user")
         Database.update_user(user=user)
 
     def delete(self, user: User):
         if Database.user_exist(user) is True:
+            print("Deleting user")
             Database.delete_user(user=user)

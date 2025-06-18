@@ -12,7 +12,7 @@ def AdminAuthorization(controller):
     @wraps(controller)
     async def auth(*args, **kwargs):
         headers: Headers = kwargs["request"].headers
-        if "1234" in headers.get("admin-auth"):
+        if "1234" == headers.get("admin-auth"):
             return await controller(*args, **kwargs)
         else:
             return JSONResponse(

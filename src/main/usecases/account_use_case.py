@@ -9,12 +9,14 @@ class AccountUseCase:
         user = User(phone=phone)
         if Database.user_exist(user=user) is False:
             UserUseCase().create(user=user)
+        print(f"Creating Account: {account.name}")
         Database.create_account(phone=phone, account=account)
 
     def delete(self, phone: str, account: Account):
         user = User(phone=phone)
         if Database.user_exist(user=user) is False:
             UserUseCase().create(user=user)
+        print(f"Deleting Account: {account.name}")
         Database.delete_account(phone=phone, account=account)
 
     def get_all(self, phone: str):
