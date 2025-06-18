@@ -4,9 +4,12 @@ from src.main.domain.schema.user import User
 
 
 class UserUseCase:
+    def __init__(self, session):
+        self.session = session
+
     def create(self, user: User):
         print(f"Creating user {User.phone}")
-        Database.create_user(user=user)
+        Database(self.session).create_user(user=user)
         message = """Hola!, veo que eres nuevo por aqui.
 La idea es que me puedas hablar para anotar tus gastos y manejar tus finanzas
 Para que sepas, lo que me puedes pedir actualmente es:
@@ -29,12 +32,12 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
         send_message(phone=user.phone, message=message)
 
     def update(self, user: User):
-        if Database.user_exist(user) is False:
+        if Database(self.session).user_exist(user) is False:
             self.create(user=user)
         print("Updating user")
-        Database.update_user(user=user)
+        Database(self.session).update_user(user=user)
 
     def delete(self, user: User):
-        if Database.user_exist(user) is True:
+        if Database(self.session).user_exist(user) is True:
             print("Deleting user")
-            Database.delete_user(user=user)
+            Database(self.session).delete_user(user=user)

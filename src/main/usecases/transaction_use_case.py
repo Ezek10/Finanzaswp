@@ -7,25 +7,28 @@ from src.main.domain.schema.user import User
 
 
 class TransactionUseCase:
+    def __init__(self, session):
+        self.session = session
+
     def get_all(self, phone: str):
         user = User(phone=phone)
-        if Database.user_exist(user=user) is False:
-            UserUseCase().create(user=user)
-        return Database.list_transaction_with_phone(phone)
+        if Database(self.session).user_exist(user=user) is False:
+            UserUseCase(self.session).create(user=user)
+        return Database(self.session).list_transaction_with_phone(phone)
 
     def get_filtered_by_account(self, phone: str, account: Account):
         user = User(phone=phone)
-        if Database.user_exist(user=user) is False:
-            UserUseCase().create(user=user)
-        return Database.list_transaction_with_phone_and_account(
+        if Database(self.session).user_exist(user=user) is False:
+            UserUseCase(self.session).create(user=user)
+        return Database(self.session).list_transaction_with_phone_and_account(
             phone=phone, account=account
         )
 
     def get_filtered_by_category(self, phone: str, category: Category):
         user = User(phone=phone)
-        if Database.user_exist(user=user) is False:
-            UserUseCase().create(user=user)
-        return Database.list_transaction_with_phone_and_category(
+        if Database(self.session).user_exist(user=user) is False:
+            UserUseCase(self.session).create(user=user)
+        return Database(self.session).list_transaction_with_phone_and_category(
             phone=phone, category=category
         )
 
@@ -35,10 +38,10 @@ class TransactionUseCase:
         transaction: Transaction,
     ):
         user = User(phone=phone)
-        if Database.user_exist(user=user) is False:
-            UserUseCase().create(user=user)
+        if Database(self.session).user_exist(user=user) is False:
+            UserUseCase(self.session).create(user=user)
         print("Creating transaction")
-        Database.create_transaction(phone=phone, transaction=transaction)
+        Database(self.session).create_transaction(phone=phone, transaction=transaction)
 
     def delete_with_id(
         self,
@@ -46,7 +49,7 @@ class TransactionUseCase:
         transaction_id: int,
     ):
         user = User(phone=phone)
-        if Database.user_exist(user=user) is False:
-            UserUseCase().create(user=user)
+        if Database(self.session).user_exist(user=user) is False:
+            UserUseCase(self.session).create(user=user)
         print("Deleting transaction")
-        Database.delete_transaction(phone=phone, transaction_id=transaction_id)
+        Database(self.session).delete_transaction(phone=phone, transaction_id=transaction_id)

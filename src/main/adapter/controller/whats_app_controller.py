@@ -1,10 +1,11 @@
 from datetime import datetime
 
-from fastapi import Request, Response
+from fastapi import Depends, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
 
 from src.main.adapter.controller.request.whats_app_request import WPRequest
+from src.main.adapter.repository.config import get_db
 from src.main.usecases.process_message_use_case import ProcessMessageUseCase
 
 router = APIRouter(prefix="/whats_app")
@@ -18,12 +19,12 @@ async def verification(request: Request):
 
 
 @router.post("")
-async def read_message(request: WPRequest):
+async def read_message(request: WPRequest, session = Depends(get_db)):
     print(f"Request: {request}")
     message = request.entry[0].changes[0].value.messages[0]
     phone = message.from_
     timestamp = int(message.timestamp)
     body = message.text.body
     date = datetime.fromtimestamp(timestamp)
-    ProcessMessageUseCase().execute(phone=phone, message=body, date=date)
+    ProcessMessageUseCase(session).execute(phone=phone, message=body, date=date)
     return JSONResponse(status_code=200, content="")
