@@ -37,6 +37,7 @@ class TransactionUseCase:
         user = User(phone=phone)
         if Database.user_exist(user=user) is False:
             UserUseCase().create(user=user)
+        print("Creating transaction")
         Database.create_transaction(phone=phone, transaction=transaction)
 
     def delete_with_id(
@@ -47,4 +48,5 @@ class TransactionUseCase:
         user = User(phone=phone)
         if Database.user_exist(user=user) is False:
             UserUseCase().create(user=user)
+        print("Deleting transaction")
         Database.delete_transaction(phone=phone, transaction_id=transaction_id)

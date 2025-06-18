@@ -10,7 +10,10 @@ from src.main.domain.schema.transaction import ListTransactions
 def send_message(
     phone, message: str | ListTransactions | ListAccounts | ListCategories
 ):
+    print("Sending Message to WhatsApp")
     auth = os.environ["AUTH"]
+    facebook_ver = os.environ["FACEBOOK_VER"]
+    phone_id = os.environ["PHONE_ID"]
     message = message_to_whatsapp_view(message)
     model = {
         "messaging_product": "whatsapp",
@@ -18,7 +21,7 @@ def send_message(
         "type": "text",
         "text": {"body": message},
     }
-    url = "https://graph.facebook.com/v17.0/117706181376555/messages"
+    url = f"https://graph.facebook.com/{facebook_ver}/{phone_id}/messages"
     header = {
         "Authorization": auth
     }
@@ -27,16 +30,16 @@ def send_message(
 
 
 def message_to_whatsapp_view(message):
-    if type(message) == ListAccounts:
+    if isinstance(message, ListAccounts):
         whatsapp_view = "Cuentas:\n"
         iterable = message.accounts
-    elif type(message) == ListCategories:
+    elif isinstance(message, ListCategories):
         whatsapp_view = "Categorias:\n"
         iterable = message.categories
-    elif type(message) == ListTransactions:
+    elif isinstance(message, ListTransactions):
         whatsapp_view = "Transacciones:\n"
         iterable = message.transactions
-    elif type(message) == str:
+    elif isinstance(message, str):
         return message
     for attr in iterable:
         whatsapp_view += attr.model_dump() + "\n"

@@ -1,28 +1,19 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from src.main.domain.exceptions.account_not_found import AccountNotFound
-from src.main.domain.exceptions.base_exception import \
-    ApplicationException
-from src.main.domain.exceptions.category_not_found import CategoryNotFound
+from src.main.adapter.whatsapp.whatsapp import send_message
+from src.main.domain.exceptions.base_exception import ApplicationException
 
 
 def ProcessException(request: Request, exception: Exception) -> JSONResponse:
     try:
         raise exception
 
-    except CategoryNotFound as exc:
-        print("ERROR")
-        return JSONResponse(status_code=404, content=exc.args)
+    except ApplicationException as ex:
+        print(f"ApplicationException: {ex.phone} - {ex.args[0]}")
+        send_message(ex.phone, ex.args[0])
+        return JSONResponse(status_code=200, content="")
 
-    except AccountNotFound as exc:
-        print("ERROR")
-        return JSONResponse(status_code=404, content=exc.args)
-
-    except ApplicationException:
-        print("ERROR")
-        return JSONResponse(status_code=500, content="Application Exception")
-
-    except Exception:
-        print("ERROR")
+    except Exception as ex:
+        print(f"ERROR {ex}")
         return JSONResponse(status_code=500, content="Internal Server Error")
