@@ -22,9 +22,10 @@ async def verification(request: Request):
 async def read_message(request: WPRequest, session = Depends(get_db)):
     print(f"Request: {request}")
     message = request.entry[0].changes[0].value.messages[0]
+    message_id = message.id
     phone = message.from_
     timestamp = int(message.timestamp)
     body = message.text.body
     date = datetime.fromtimestamp(timestamp)
-    ProcessMessageUseCase(session).execute(phone=phone, message=body, date=date)
+    ProcessMessageUseCase(session).execute(phone=phone, message=body, date=date, message_id=message_id)
     return JSONResponse(status_code=200, content="")

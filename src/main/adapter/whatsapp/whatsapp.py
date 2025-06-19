@@ -7,6 +7,24 @@ from src.main.domain.schema.category import ListCategories
 from src.main.domain.schema.transaction import ListTransactions
 
 
+def send_reaction(phone: str, message_id: str, reaction: str):
+    print("Sending Reaction to WhatsApp")
+    auth = os.environ["AUTH"]
+    facebook_ver = os.environ["FACEBOOK_VER"]
+    phone_id = os.environ["PHONE_ID"]
+    model = {
+        "messaging_product": "whatsapp",
+        "to": phone,
+        "type": "reaction",
+        "reaction": {"message_id": message_id, "emoji": reaction},
+    }
+    url = f"https://graph.facebook.com/{facebook_ver}/{phone_id}/messages"
+    header = {
+        "Authorization": auth
+    }
+    response = request(method="post", url=url, headers=header, json=model)
+    print(response, response.content)
+
 def send_message(
     phone, message: str | ListTransactions | ListAccounts | ListCategories
 ):
