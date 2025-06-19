@@ -17,12 +17,12 @@ class ProcessMessageUseCase:
         self.session = session
 
     def execute(self, phone: str, message: str, date: datetime = datetime.now()):
-        words_spend = ["gaste"]
+        words_spend = ["gaste", "gasté"]
         words_configuration = ["configurar"]
         words_create = ["crear", "definir"]
         words_ingreso = ["ingreso"]
         words_delete = ["borrar"]
-        words_transfer = ["transferi", "retire"]
+        words_transfer = ["transferi", "transferí", "retire"]
         words_list = ["listar", "traer", "mostrar"]
         message = message.lower()
         print(f"Phone: {phone}")
@@ -87,19 +87,19 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
 
     def _proccess_delete(self, phone, message: str):
         delete, attr, name = message.split(" ")
-        if attr == "transaccion":
+        if attr in {"transaccion", "transacción"}:
             return TransactionUseCase(self.session).delete_with_id(phone, name)
         elif attr == "cuenta":
             account = Account(name=name)
             return AccountUseCase(self.session).delete(phone, account)
-        elif attr == "categoria":
+        elif attr in {"categoria", "categoría"}:
             category = Category(name=name)
             return CategoryUseCase(self.session).delete(phone, category)
 
     def _proccess_list(self, phone: str, message: str):
         list, *attr = message.split(" ")
         if attr[0] == "transacciones":
-            if "categoria" in attr:  # list transactions with category xxx
+            if "categoria" in attr or "categoría" in attr:  # list transactions with category xxx
                 return TransactionUseCase(self.session).get_filtered_by_category(phone, attr[3])
             elif "cuenta" in attr:
                 return TransactionUseCase(self.session).get_filtered_by_account(phone, attr[3])
@@ -126,7 +126,7 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
         if attr == "cuenta":
             account = Account(name=name)
             return AccountUseCase(self.session).create(phone=phone, account=account)
-        elif attr == "categoria":
+        elif attr in {"categoria", "categoría"}:
             category = Category(name=name)
             return CategoryUseCase(self.session).create(phone=phone, category=category)
 
