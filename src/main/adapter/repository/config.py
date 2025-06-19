@@ -39,7 +39,5 @@ def get_db() -> Session:
     db: Session = SessionLocal()
     try:
         yield db
-    except Exception:
-        db.rollback()
     finally:
         db.close()

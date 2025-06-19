@@ -18,6 +18,17 @@ class Database(Repository):
     def __init__(self, session: Session):
         self.session: Session = session
 
+    def commit_rollback(self) -> None:
+        """
+        Commit funcion with rollback if raises in commit
+        raises AlreadyExist Exception if Integrity Error is thrown
+        """
+        try:
+            self.session.commit()
+        except Exception:
+            self.session.rollback()
+            raise
+
     def user_exist(self, user: User) -> bool:
         """devuelve booleano sobre si existe un usuario o no"""
         user_db = self.session.scalars(select(UserDB).where(UserDB.id == user.phone)).first()
@@ -26,10 +37,10 @@ class Database(Repository):
     def create_user(self, user: User) -> None:
         """creo una persona con un phone"""
         self.session.add(UserDB(email=user.email, id=user.phone, name=user.name))
-        self.session.commit()
+        
         self.session.add(CategoryDB(name="transfer", user_id=user.phone))
         self.session.add(CategoryDB(name="saldo_inicial", user_id=user.phone))
-        self.session.commit()
+        
 
     def update_user(self, user: User) -> None:
         """actualizo una persona con phone y un user con email o name"""
@@ -39,12 +50,12 @@ class Database(Repository):
                 user_db.name = user.name
             if user.email is not None:
                 user_db.email = user.email
-            self.session.commit()
+            
 
     def delete_user(self, user: User) -> None:
         """borro una persona con phone y un user con email o name"""
         self.session.execute(delete(UserDB).where(UserDB.id == user.phone)).first()
-        self.session.commit()
+        
 
     def create_category(self, phone: str, category: Category) -> None:
         """creo una categoria teniendo el numero de telefono"""
@@ -55,7 +66,7 @@ class Database(Repository):
         ).first()
         if category_db is None:
             self.session.add(CategoryDB(name=category.name, user_id=phone))
-            self.session.commit()
+            
 
     def delete_category(self, phone: str, category: Category) -> None:
         """borro una categoria teniendo el numero de telefono"""
@@ -66,7 +77,7 @@ class Database(Repository):
         ).first()
         if category_db is not None:
             self.session.execute(delete(category_db))
-            self.session.commit()
+            
 
     def create_account(self, phone: str, account: Account) -> None:
         """creo una cuenta teniendo el numero de telefono"""
@@ -77,7 +88,7 @@ class Database(Repository):
         ).first()
         if account_db is None:
             self.session.add(AccountDB(name=account.name, user_id=phone))
-            self.session.commit()
+            
 
     def delete_account(self, phone: str, account: Account) -> None:
         """borro una cuenta teniendo el numero de telefono"""
@@ -88,7 +99,7 @@ class Database(Repository):
         ).first()
         if account_db is not None:
             self.session.execute(delete(account_db))
-            self.session.commit()
+            
 
     def create_transaction(self, phone: str, transaction: Transaction) -> None:
         """creo una transaction con el numero de telefono, nombre categoria y nombre account"""
@@ -117,7 +128,7 @@ class Database(Repository):
                 description=transaction.description,
             )
         )
-        self.session.commit()
+        
 
     def delete_transaction(self, phone: str, transaction_id: int) -> None:
         """borro una transaccion teniendo el numero de telefono"""
@@ -128,7 +139,7 @@ class Database(Repository):
         ).first()
         if transaction_db is not None:
             self.session.execute(delete(transaction_db))
-            self.session.commit()
+            
 
     def list_accounts_with_phone(self, phone: str) -> ListAccounts:
         """listo todos los valores de las cuentas asociadas a un numero de telefono"""
