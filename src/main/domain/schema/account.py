@@ -8,7 +8,7 @@ class Account(BaseModel):
 
     name: str
     currency: Optional[str] = ""
-    resume_value: Optional[float] = None
+    resume_value: Optional[float] = 0
 
     @model_serializer
     def ser_model(self) -> str:

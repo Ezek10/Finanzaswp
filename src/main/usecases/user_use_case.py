@@ -36,8 +36,3 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
             self.create(user=user)
         print("Updating user")
         Database(self.session).update_user(user=user)
-
-    def delete(self, user: User):
-        if Database(self.session).user_exist(user) is True:
-            print("Deleting user")
-            Database(self.session).delete_user(user=user)

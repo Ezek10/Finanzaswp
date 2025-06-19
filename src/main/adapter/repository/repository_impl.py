@@ -52,11 +52,6 @@ class Database(Repository):
                 user_db.email = user.email
             self.commit_rollback()
 
-    def delete_user(self, user: User) -> None:
-        """borro una persona con phone y un user con email o name"""
-        self.session.execute(delete(UserDB).where(UserDB.id == user.phone)).first()
-        self.commit_rollback()
-
     def create_category(self, phone: str, category: Category) -> None:
         """creo una categoria teniendo el numero de telefono"""
         category_db = self.session.scalars(
@@ -87,7 +82,7 @@ class Database(Repository):
             .where(AccountDB.name == account.name)
         ).first()
         if account_db is None:
-            self.session.add(AccountDB(name=account.name, user_id=phone))
+            self.session.add(AccountDB(name=account.name, user_id=phone, currency="ARS"))
             self.commit_rollback()
 
     def delete_account(self, phone: str, account: Account) -> None:
@@ -150,6 +145,7 @@ class Database(Repository):
                 func.sum(TransactionDB.amount).label("resume_value"),
             )
             .where(AccountDB.user_id == phone)
+            .join(TransactionDB, AccountDB.id == TransactionDB.account_id, isouter=True)
             .group_by(AccountDB.name, AccountDB.id)
         ).all()
         accounts = list(map(Account.model_validate, response))

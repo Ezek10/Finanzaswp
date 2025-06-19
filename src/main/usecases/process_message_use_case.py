@@ -95,9 +95,6 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
         elif attr == "categoria":
             category = Category(name=name)
             return CategoryUseCase(self.session).delete(phone, category)
-        elif attr == "usuario":
-            user = User(name=name)
-            return UserUseCase(self.session).delete(user)
 
     def _proccess_list(self, phone: str, message: str):
         list, *attr = message.split(" ")
