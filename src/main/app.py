@@ -1,13 +1,26 @@
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
-
+from contextlib import asynccontextmanager
 from src.main.adapter.controller.whats_app_controller import router
+from src.main.adapter.repository.config import create_all
 from src.main.domain.exceptions.handler import ProcessException
 from src.privacy_policy import MESSAGE
 
 app = FastAPI()
 app.include_router(router)
 
+def start_up():
+    create_all()
+
+def shutdown():
+    pass
+
+
+@asynccontextmanager
+def lifespan(app: FastAPI):
+    start_up()
+    yield
+    shutdown()
 
 @app.get("/privacy-policy")
 async def privacy_policy() -> Response:

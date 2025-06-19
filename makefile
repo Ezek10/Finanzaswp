@@ -3,6 +3,7 @@
 
 help:
 	@echo "run: run the project locally"
+	@echo "docker-push: create and push the docker image"
 	@echo "isort: adjust imports"
 	@echo "black: format code"
 	@echo "flake: lint the code"
@@ -29,3 +30,7 @@ test:
 	pytest --cov --cov-config=.coveragerc --cov-report=html
 
 format: isort black flake pylint
+
+docker-push:
+	docker build -t ezemarcel/finanzaswp:latest .
+	docker push ezemarcel/finanzaswp:latest

@@ -1,4 +1,5 @@
 from datetime import datetime
+from sqlalchemy.orm import Session
 
 from src.main.usecases.account_use_case import AccountUseCase
 from src.main.usecases.category_use_case import CategoryUseCase
@@ -12,6 +13,9 @@ from src.main.domain.schema.user import User
 
 
 class ProcessMessageUseCase:
+    def __init__(self, session: Session):
+        self.session = session
+
     def execute(self, phone: str, message: str, date: datetime = datetime.now()):
         words_spend = ["gaste"]
         words_configuration = ["configurar"]
@@ -79,35 +83,35 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
         transaction = Transaction(
             amount=-amount, created_at=date, category=category, account=account
         )
-        return TransactionUseCase().create(phone=phone, transaction=transaction)
+        return TransactionUseCase(self.session).create(phone=phone, transaction=transaction)
 
     def _proccess_delete(self, phone, message: str):
         delete, attr, name = message.split(" ")
         if attr == "transaccion":
-            return TransactionUseCase().delete_with_id(phone, name)
+            return TransactionUseCase(self.session).delete_with_id(phone, name)
         elif attr == "cuenta":
             account = Account(name=name)
-            return AccountUseCase().delete(phone, account)
+            return AccountUseCase(self.session).delete(phone, account)
         elif attr == "categoria":
             category = Category(name=name)
-            return CategoryUseCase().delete(phone, category)
+            return CategoryUseCase(self.session).delete(phone, category)
         elif attr == "usuario":
             user = User(name=name)
-            return UserUseCase().delete(user)
+            return UserUseCase(self.session).delete(user)
 
     def _proccess_list(self, phone: str, message: str):
         list, *attr = message.split(" ")
         if attr[0] == "transacciones":
             if "categoria" in attr:  # list transactions with category xxx
-                return TransactionUseCase().get_filtered_by_category(phone, attr[3])
+                return TransactionUseCase(self.session).get_filtered_by_category(phone, attr[3])
             elif "cuenta" in attr:
-                return TransactionUseCase().get_filtered_by_account(phone, attr[3])
+                return TransactionUseCase(self.session).get_filtered_by_account(phone, attr[3])
             else:
-                return TransactionUseCase().get_all(phone)
+                return TransactionUseCase(self.session).get_all(phone)
         elif attr[0] == "cuentas":
-            return AccountUseCase().get_all(phone)
+            return AccountUseCase(self.session).get_all(phone)
         elif attr[0] == "categorias":
-            return CategoryUseCase().get_all(phone)
+            return CategoryUseCase(self.session).get_all(phone)
 
     def _proccess_configuration(self, phone: str, message: str):
         if "email" in message:
@@ -118,16 +122,16 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
             user = User(phone=phone, name=user_name)
         else:
             return
-        return UserUseCase().update(user=user)
+        return UserUseCase(self.session).update(user=user)
 
     def _proccess_create(self, phone: str, message: str):
         create, attr, name = message.split(" ")
         if attr == "cuenta":
             account = Account(name=name)
-            return AccountUseCase().create(phone=phone, account=account)
+            return AccountUseCase(self.session).create(phone=phone, account=account)
         elif attr == "categoria":
             category = Category(name=name)
-            return CategoryUseCase().create(phone=phone, category=category)
+            return CategoryUseCase(self.session).create(phone=phone, category=category)
 
     def _proccess_ingreso(self, phone: str, message: str, date: datetime):
         ingreso, amount, forr, category, inn, account = message.split(" ")
@@ -136,7 +140,7 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
         transaction = Transaction(
             amount=amount, created_at=date, category=category, account=account
         )
-        return TransactionUseCase().create(phone=phone, transaction=transaction)
+        return TransactionUseCase(self.session).create(phone=phone, transaction=transaction)
 
     def _proccess_transfer(self, phone: str, message: str, date: datetime):
         transfer, amount, fromm, account_origin, to, account_destiny = message.split(
@@ -159,11 +163,11 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
             account=account_destiny,
             category=category,
         )
-        TransactionUseCase().create(
+        TransactionUseCase(self.session).create(
             phone=phone,
             transaction=transaction_origin,
         )
-        TransactionUseCase().create(
+        TransactionUseCase(self.session).create(
             phone=phone,
             transaction=transaction_destiny,
         )
