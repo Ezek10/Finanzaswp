@@ -96,6 +96,17 @@ class Database(Repository):
             self.session.execute(delete(account_db))
             self.commit_rollback()
 
+    def get_account_by_name(self, phone: str, name: str) -> Account:
+        """obtengo una cuenta teniendo el numero de telefono y el nombre de la cuenta"""
+        account_db: AccountDB = self.session.scalars(
+            select(AccountDB)
+            .where(AccountDB.user_id == phone)
+            .where(AccountDB.name == name)
+        ).first()
+        if account_db is None:
+            raise AccountNotFound(name)
+        return list(map(ListAccounts.model_validate, [account_db]))
+
     def create_transaction(self, phone: str, transaction: Transaction) -> None:
         """creo una transaction con el numero de telefono, nombre categoria y nombre account"""
         category_db: CategoryDB = self.session.scalars(

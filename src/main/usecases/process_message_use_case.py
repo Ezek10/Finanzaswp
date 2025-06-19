@@ -91,7 +91,8 @@ Si tu mensaje se proceso bien se te reaccionara con un ✅, si hubo un error se 
         transaction = Transaction(
             amount=-amount, created_at=date, category=category, account=account
         )
-        return TransactionUseCase(self.session).create(phone=phone, transaction=transaction)
+        TransactionUseCase(self.session).create(phone=phone, transaction=transaction)
+        return AccountUseCase(self.session).get_by_name(phone=phone, name=account.name)
 
     def _proccess_delete(self, phone, message: str):
         delete, attr, name = message.split(" ")
@@ -145,7 +146,8 @@ Si tu mensaje se proceso bien se te reaccionara con un ✅, si hubo un error se 
         transaction = Transaction(
             amount=amount, created_at=date, category=category, account=account
         )
-        return TransactionUseCase(self.session).create(phone=phone, transaction=transaction)
+        TransactionUseCase(self.session).create(phone=phone, transaction=transaction)
+        return AccountUseCase(self.session).get_by_name(phone=phone, name=account.name)
 
     def _proccess_transfer(self, phone: str, message: str, date: datetime):
         transfer, amount, fromm, account_origin, to, account_destiny = message.split(
