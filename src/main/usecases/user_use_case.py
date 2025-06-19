@@ -8,7 +8,7 @@ class UserUseCase:
         self.session = session
 
     def create(self, user: User):
-        print(f"Creating user {User.phone}")
+        print(f"Creating user {user.phone}")
         Database(self.session).create_user(user=user)
         message = """Hola!, veo que eres nuevo por aqui.
 La idea es que me puedas hablar para anotar tus gastos y manejar tus finanzas
