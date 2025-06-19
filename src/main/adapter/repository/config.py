@@ -31,6 +31,8 @@ Base = declarative_base()
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+def create_all():
+    Base.metadata.create_all(bind=engine)
 
 def get_db() -> Session:
     """This function is a generator of a db session."""
