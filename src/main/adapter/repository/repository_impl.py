@@ -37,10 +37,10 @@ class Database(Repository):
     def create_user(self, user: User) -> None:
         """creo una persona con un phone"""
         self.session.add(UserDB(email=user.email, id=user.phone, name=user.name))
-        
+        self.commit_rollback()
         self.session.add(CategoryDB(name="transfer", user_id=user.phone))
         self.session.add(CategoryDB(name="saldo_inicial", user_id=user.phone))
-        
+        self.commit_rollback()
 
     def update_user(self, user: User) -> None:
         """actualizo una persona con phone y un user con email o name"""
@@ -50,12 +50,12 @@ class Database(Repository):
                 user_db.name = user.name
             if user.email is not None:
                 user_db.email = user.email
-            
+            self.commit_rollback()
 
     def delete_user(self, user: User) -> None:
         """borro una persona con phone y un user con email o name"""
         self.session.execute(delete(UserDB).where(UserDB.id == user.phone)).first()
-        
+        self.commit_rollback()
 
     def create_category(self, phone: str, category: Category) -> None:
         """creo una categoria teniendo el numero de telefono"""
@@ -66,7 +66,7 @@ class Database(Repository):
         ).first()
         if category_db is None:
             self.session.add(CategoryDB(name=category.name, user_id=phone))
-            
+            self.commit_rollback()
 
     def delete_category(self, phone: str, category: Category) -> None:
         """borro una categoria teniendo el numero de telefono"""
@@ -77,7 +77,7 @@ class Database(Repository):
         ).first()
         if category_db is not None:
             self.session.execute(delete(category_db))
-            
+            self.commit_rollback()
 
     def create_account(self, phone: str, account: Account) -> None:
         """creo una cuenta teniendo el numero de telefono"""
@@ -88,7 +88,7 @@ class Database(Repository):
         ).first()
         if account_db is None:
             self.session.add(AccountDB(name=account.name, user_id=phone))
-            
+            self.commit_rollback()
 
     def delete_account(self, phone: str, account: Account) -> None:
         """borro una cuenta teniendo el numero de telefono"""
@@ -99,7 +99,7 @@ class Database(Repository):
         ).first()
         if account_db is not None:
             self.session.execute(delete(account_db))
-            
+            self.commit_rollback()
 
     def create_transaction(self, phone: str, transaction: Transaction) -> None:
         """creo una transaction con el numero de telefono, nombre categoria y nombre account"""
@@ -128,7 +128,7 @@ class Database(Repository):
                 description=transaction.description,
             )
         )
-        
+        self.commit_rollback()
 
     def delete_transaction(self, phone: str, transaction_id: int) -> None:
         """borro una transaccion teniendo el numero de telefono"""
@@ -139,7 +139,7 @@ class Database(Repository):
         ).first()
         if transaction_db is not None:
             self.session.execute(delete(transaction_db))
-            
+            self.commit_rollback()
 
     def list_accounts_with_phone(self, phone: str) -> ListAccounts:
         """listo todos los valores de las cuentas asociadas a un numero de telefono"""
