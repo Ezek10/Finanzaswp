@@ -157,7 +157,7 @@ class Database(Repository):
             select(
                 CategoryDB.name, func.sum(TransactionDB.amount).label("resume_value")
             )
-            .join(TransactionDB)
+            .join(TransactionDB, CategoryDB.id == TransactionDB.category_id, isouter=True)
             .where(CategoryDB.user_id == phone)
             .group_by(CategoryDB.name, CategoryDB.id)
         ).all()
