@@ -59,7 +59,7 @@ class ProcessMessageUseCase:
         except Exception as e:
             print(f"Error processing message: {e}")
             send_reaction(phone, message_id, "❌")
-            return f"Error al procesar el mensaje: {e}"
+            raise e
 
     def _proccess_help(self):
         message = """Hola, si no sabes que quieres pedirme, prueba con:

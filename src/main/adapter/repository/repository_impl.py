@@ -98,14 +98,19 @@ class Database(Repository):
 
     def get_account_by_name(self, phone: str, name: str) -> Account:
         """obtengo una cuenta teniendo el numero de telefono y el nombre de la cuenta"""
-        account_db: AccountDB = self.session.scalars(
-            select(AccountDB)
+        account_db = self.session.execute(
+            select(
+                AccountDB.name,
+                AccountDB.currency,
+                func.sum(TransactionDB.amount).label("resume_value"),
+            )
             .where(AccountDB.user_id == phone)
-            .where(AccountDB.name == name)
+            .join(TransactionDB, AccountDB.id == TransactionDB.account_id, isouter=True)
+            .group_by(AccountDB.name, AccountDB.id)
         ).first()
         if account_db is None:
-            raise AccountNotFound(name)
-        return list(map(ListAccounts.model_validate, [account_db]))
+            raise AccountNotFound(name, phone=phone)
+        return ListAccounts(accounts=[Account.model_validate(account_db)])
 
     def create_transaction(self, phone: str, transaction: Transaction) -> None:
         """creo una transaction con el numero de telefono, nombre categoria y nombre account"""
@@ -115,7 +120,7 @@ class Database(Repository):
             .where(CategoryDB.name == transaction.category.name)
         ).first()
         if category_db is None:
-            raise CategoryNotFound(transaction.category.name)
+            raise CategoryNotFound(transaction.category.name, phone=phone)
 
         account_db: AccountDB = self.session.scalars(
             select(AccountDB)
@@ -123,7 +128,7 @@ class Database(Repository):
             .where(AccountDB.name == transaction.account.name)
         ).first()
         if account_db is None:
-            raise AccountNotFound(transaction.account.name)
+            raise AccountNotFound(transaction.account.name, phone=phone)
 
         self.session.add(
             TransactionDB(
