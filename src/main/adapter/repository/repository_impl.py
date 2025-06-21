@@ -65,7 +65,7 @@ class Database(Repository):
 
     def delete_category(self, phone: str, category: Category) -> None:
         """borro una categoria teniendo el numero de telefono"""
-        self.session.delete(CategoryDB).where(CategoryDB.user_id == phone).where(CategoryDB.name == category.name)
+        delete(CategoryDB).where(CategoryDB.user_id == phone).where(CategoryDB.name == category.name)
         self.commit_rollback()
 
     def get_category_by_name(self, phone: str, name: str) -> Account:
@@ -97,7 +97,7 @@ class Database(Repository):
 
     def delete_account(self, phone: str, account: Account) -> None:
         """borro una cuenta teniendo el numero de telefono"""
-        self.session.delete(AccountDB).where(AccountDB.user_id == phone).where(AccountDB.name == account.name)
+        delete(AccountDB).where(AccountDB.user_id == phone).where(AccountDB.name == account.name)
         self.commit_rollback()
 
     def get_account_by_name(self, phone: str, name: str) -> Account:
@@ -148,7 +148,7 @@ class Database(Repository):
 
     def delete_transaction(self, phone: str, transaction_id: int) -> None:
         """borro una transaccion teniendo el numero de telefono"""
-        self.session.delete(TransactionDB).where(TransactionDB.user_id == phone).where(TransactionDB.id == transaction_id)
+        delete(TransactionDB).where(TransactionDB.user_id == phone).where(TransactionDB.id == transaction_id)
         self.commit_rollback()
 
     def list_accounts_with_phone(self, phone: str) -> ListAccounts:
