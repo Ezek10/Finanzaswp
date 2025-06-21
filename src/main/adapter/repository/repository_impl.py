@@ -74,6 +74,22 @@ class Database(Repository):
             self.session.execute(delete(category_db))
             self.commit_rollback()
 
+    def get_category_by_name(self, phone: str, name: str) -> Account:
+        """obtengo una categoria teniendo el numero de telefono y el nombre de la categoria"""
+        category_db = self.session.execute(
+            select(
+                CategoryDB.name,
+                func.sum(TransactionDB.amount).label("resume_value"),
+            )
+            .where(CategoryDB.user_id == phone)
+            .where(CategoryDB.name == name)
+            .join(TransactionDB, CategoryDB.id == TransactionDB.category_id, isouter=True)
+            .group_by(CategoryDB.name, CategoryDB.id)
+        ).first()
+        if category_db is None:
+            raise CategoryNotFound(name, phone=phone)
+        return ListCategories(categories=[Category.model_validate(category_db)])
+
     def create_account(self, phone: str, account: Account) -> None:
         """creo una cuenta teniendo el numero de telefono"""
         account_db = self.session.scalars(
@@ -105,6 +121,7 @@ class Database(Repository):
                 func.sum(TransactionDB.amount).label("resume_value"),
             )
             .where(AccountDB.user_id == phone)
+            .where(AccountDB.name == name)
             .join(TransactionDB, AccountDB.id == TransactionDB.account_id, isouter=True)
             .group_by(AccountDB.name, AccountDB.id)
         ).first()

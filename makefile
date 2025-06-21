@@ -32,7 +32,7 @@ test:
 format: isort black flake pylint
 
 docker-push:
-	docker build -t ezemarcel/finanzaswp:0.2.5 .
-	docker push ezemarcel/finanzaswp:0.2.5
-	docker build -t ezemarcel/finanzaswp:latest .
+	docker buildx build --platform linux/amd64 -t ezemarcel/finanzaswp:0.2.6 .
+	docker push ezemarcel/finanzaswp:0.2.6
+	docker buildx build --platform linux/amd64 -t ezemarcel/finanzaswp:latest .
 	docker push ezemarcel/finanzaswp:latest

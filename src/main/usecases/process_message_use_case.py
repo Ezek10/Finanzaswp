@@ -78,7 +78,7 @@ class ProcessMessageUseCase:
 
 Recuerda que las *Cuentas* son donde tenes tu dinero, sea el nombre de un banco o tu misma billetera.
 Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida, etc.
-Los nombres de las cuentas y categorias no pueden tener espacios, pero si guiones bajos o guiones medios.
+Los nombres de las cuentas y categorias *no pueden tener espacios*, pero si guiones bajos o guiones medios.
 Si tu mensaje se proceso bien se te reaccionara con un ✅, si hubo un error se te reaccionara con un ❌.
 """
         return message
@@ -134,10 +134,12 @@ Si tu mensaje se proceso bien se te reaccionara con un ✅, si hubo un error se 
         create, attr, name = message.split(" ")
         if attr == "cuenta":
             account = Account(name=name)
-            return AccountUseCase(self.session).create(phone=phone, account=account)
+            AccountUseCase(self.session).create(phone=phone, account=account)
+            return AccountUseCase(self.session).get_by_name(phone=phone, name=account.name)
         elif attr in {"categoria", "categoría"}:
             category = Category(name=name)
-            return CategoryUseCase(self.session).create(phone=phone, category=category)
+            CategoryUseCase(self.session).create(phone=phone, category=category)
+            return CategoryUseCase(self.session).get_by_name(phone=phone, name=category.name)
 
     def _proccess_ingreso(self, phone: str, message: str, date: datetime):
         ingreso, amount, forr, category, inn, account = message.split(" ")
