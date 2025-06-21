@@ -65,14 +65,8 @@ class Database(Repository):
 
     def delete_category(self, phone: str, category: Category) -> None:
         """borro una categoria teniendo el numero de telefono"""
-        category_db = self.session.scalars(
-            select(CategoryDB)
-            .where(CategoryDB.user_id == phone)
-            .where(CategoryDB.name == category.name)
-        ).first()
-        if category_db is not None:
-            self.session.execute(delete(category_db))
-            self.commit_rollback()
+        self.session.delete(CategoryDB).where(CategoryDB.user_id == phone).where(CategoryDB.name == category.name)
+        self.commit_rollback()
 
     def get_category_by_name(self, phone: str, name: str) -> Account:
         """obtengo una categoria teniendo el numero de telefono y el nombre de la categoria"""
@@ -103,14 +97,8 @@ class Database(Repository):
 
     def delete_account(self, phone: str, account: Account) -> None:
         """borro una cuenta teniendo el numero de telefono"""
-        account_db = self.session.scalars(
-            select(AccountDB)
-            .where(AccountDB.user_id == phone)
-            .where(AccountDB.name == account.name)
-        ).first()
-        if account_db is not None:
-            self.session.execute(delete(account_db))
-            self.commit_rollback()
+        self.session.delete(AccountDB).where(AccountDB.user_id == phone).where(AccountDB.name == account.name)
+        self.commit_rollback()
 
     def get_account_by_name(self, phone: str, name: str) -> Account:
         """obtengo una cuenta teniendo el numero de telefono y el nombre de la cuenta"""
@@ -160,14 +148,8 @@ class Database(Repository):
 
     def delete_transaction(self, phone: str, transaction_id: int) -> None:
         """borro una transaccion teniendo el numero de telefono"""
-        transaction_db = self.session.scalars(
-            select(TransactionDB)
-            .where(TransactionDB.user_id == phone)
-            .where(TransactionDB.id == transaction_id)
-        ).first()
-        if transaction_db is not None:
-            self.session.execute(delete(transaction_db))
-            self.commit_rollback()
+        self.session.delete(TransactionDB).where(TransactionDB.user_id == phone).where(TransactionDB.id == transaction_id)
+        self.commit_rollback()
 
     def list_accounts_with_phone(self, phone: str) -> ListAccounts:
         """listo todos los valores de las cuentas asociadas a un numero de telefono"""
