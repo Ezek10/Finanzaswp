@@ -28,8 +28,8 @@ class CategoryUseCase:
             UserUseCase(self.session).create(user=user)
         return Database(self.session).list_categories_with_phone(phone=phone)
 
-    def get_one(self, phone: str, category: Category):
+    def get_by_name(self, phone: str, name: str):
         user = User(phone=phone)
         if Database(self.session).user_exist(user=user) is False:
             UserUseCase(self.session).create(user=user)
-        return Database(self.session).list_categories_with_phone(phone=phone)
+        return Database(self.session).get_category_by_name(phone=phone, name=name)

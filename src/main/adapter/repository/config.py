@@ -21,9 +21,9 @@ def get_connection(
     port: str = DB_PORT,
     database: str = DB_NAME,
 ) -> Engine:
-    return create_engine(
-        url=f"{engine}://{username}:{password}@{host}:{port}/{database}"
-    )
+    url=f"{engine}://{username}:{password}@{host}:{port}/{database}"
+    print(url)
+    return create_engine(url=url)
 
 
 engine = get_connection()
@@ -39,7 +39,5 @@ def get_db() -> Session:
     db: Session = SessionLocal()
     try:
         yield db
-    except Exception:
-        db.rollback()
     finally:
         db.close()

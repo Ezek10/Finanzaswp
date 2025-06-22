@@ -6,8 +6,6 @@ from src.main.adapter.repository.config import create_all
 from src.main.domain.exceptions.handler import ProcessException
 from src.privacy_policy import MESSAGE
 
-app = FastAPI()
-app.include_router(router)
 
 def start_up():
     create_all()
@@ -17,10 +15,13 @@ def shutdown():
 
 
 @asynccontextmanager
-def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI):
     start_up()
     yield
     shutdown()
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(router)
 
 @app.get("/privacy-policy")
 async def privacy_policy() -> Response:

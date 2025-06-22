@@ -5,7 +5,7 @@ from src.main.usecases.account_use_case import AccountUseCase
 from src.main.usecases.category_use_case import CategoryUseCase
 from src.main.usecases.transaction_use_case import TransactionUseCase
 from src.main.usecases.user_use_case import UserUseCase
-from src.main.adapter.whatsapp.whatsapp import send_message
+from src.main.adapter.whatsapp.whatsapp import send_message, send_reaction
 from src.main.domain.schema.account import Account
 from src.main.domain.schema.category import Category
 from src.main.domain.schema.transaction import Transaction
@@ -16,62 +16,70 @@ class ProcessMessageUseCase:
     def __init__(self, session: Session):
         self.session = session
 
-    def execute(self, phone: str, message: str, date: datetime = datetime.now()):
-        words_spend = ["gaste"]
-        words_configuration = ["configurar"]
-        words_create = ["crear", "definir"]
-        words_ingreso = ["ingreso"]
-        words_delete = ["borrar"]
-        words_transfer = ["transferi", "retire"]
-        words_list = ["listar", "traer", "mostrar"]
-        message = message.lower()
-        print(f"Phone: {phone}")
-        print(f"Message: {message}")
-        if self._words_in_message(words_configuration, message):
-            print("Processing Configuration")
-            message_to_send = self._proccess_configuration(phone, message)
-        elif self._words_in_message(words_create, message):
-            print("Processing create")
-            message_to_send = self._proccess_create(phone, message)
-        elif self._words_in_message(words_ingreso, message):
-            print("Processing ingreso")
-            message_to_send = self._proccess_ingreso(phone, message, date)
-        elif self._words_in_message(words_transfer, message):
-            print("Processing transfer")
-            message_to_send = self._proccess_transfer(phone, message, date)
-        elif self._words_in_message(words_spend, message):
-            print("Processing spend")
-            message_to_send = self._proccess_spend(phone, message, date)
-        elif self._words_in_message(words_list, message):
-            print("Processing list")
-            message_to_send = self._proccess_list(phone, message)
-        elif self._words_in_message(words_delete, message):
-            print("Processing delete")
-            message_to_send = self._proccess_delete(phone, message)
-        else:
-            print("Processing help")
-            message_to_send = self._proccess_help()
-        if message_to_send is not None:
-            send_message(phone, message_to_send)
-        return message_to_send
+    def execute(self, phone: str, message: str, message_id: str, date: datetime = datetime.now()):
+        try:
+            words_spend = ["gaste", "gasté"]
+            words_configuration = ["configurar"]
+            words_create = ["crear", "definir"]
+            words_ingreso = ["ingreso"]
+            words_delete = ["borrar"]
+            words_transfer = ["transferi", "transferí", "retire"]
+            words_list = ["listar", "traer", "mostrar"]
+            message = message.lower()
+            print(f"Phone: {phone}")
+            print(f"Message: {message}")
+            if self._words_in_message(words_configuration, message):
+                print("Processing Configuration")
+                message_to_send = self._proccess_configuration(phone, message)
+            elif self._words_in_message(words_create, message):
+                print("Processing create")
+                message_to_send = self._proccess_create(phone, message)
+            elif self._words_in_message(words_ingreso, message):
+                print("Processing ingreso")
+                message_to_send = self._proccess_ingreso(phone, message, date)
+            elif self._words_in_message(words_transfer, message):
+                print("Processing transfer")
+                message_to_send = self._proccess_transfer(phone, message, date)
+            elif self._words_in_message(words_spend, message):
+                print("Processing spend")
+                message_to_send = self._proccess_spend(phone, message, date)
+            elif self._words_in_message(words_list, message):
+                print("Processing list")
+                message_to_send = self._proccess_list(phone, message)
+            elif self._words_in_message(words_delete, message):
+                print("Processing delete")
+                message_to_send = self._proccess_delete(phone, message)
+            else:
+                print("Processing help")
+                message_to_send = self._proccess_help()
+            if message_to_send is not None:
+                send_message(phone, message_to_send)
+            send_reaction(phone, message_id, "✅")
+            return message_to_send
+        except Exception as e:
+            print(f"Error processing message: {e}")
+            send_reaction(phone, message_id, "❌")
+            raise e
 
     def _proccess_help(self):
         message = """Hola, si no sabes que quieres pedirme, prueba con:
-    - Crear/Definir cuenta 'cuenta'
-    - Crear/Definir categoria 'categoria'
-    - Gaste 300 por 'categoria' en 'cuenta'
-    - Ingreso 300 por 'categoria' en 'cuenta'
-    - Transferi/Retire 300 desde 'cuenta_origen' hacia 'cuenta_destino'
+    - Crear cuenta tu_cuenta
+    - Crear categoria tu_categoria
+    - Gaste 300 por tu_categoria en tu_cuenta
+    - Ingreso 300 por tu_categoria en tu_cuenta
+    - Transferi 300 desde tu_cuenta_origen hacia tu_cuenta_destino
+    - Listar categorias
+    - Listar cuentas
+    - Listar transacciones
+    - Listar transacciones con categoria tu_categoria
+    - Listar transacciones con cuenta tu_cuenta
     - Configurar email 'email@example.com'
     - Configurar nombre 'nombre_de_usuario'
-    - Listar/Traer/Mostrar categorias
-    - Listar/Traer/Mostrar cuentas
-    - Listar/Traer/Mostrar transacciones
-    - Listar/Traer/Mostrar transacciones con categoria 'categoria'
-    - Listar/Traer/Mostrar transacciones con cuenta 'cuenta'
 
 Recuerda que las *Cuentas* son donde tenes tu dinero, sea el nombre de un banco o tu misma billetera.
 Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida, etc.
+Los nombres de las cuentas y categorias *no pueden tener espacios*, pero si guiones bajos o guiones medios.
+Si tu mensaje se proceso bien se te reaccionara con un ✅, si hubo un error se te reaccionara con un ❌.
 """
         return message
 
@@ -83,26 +91,24 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
         transaction = Transaction(
             amount=-amount, created_at=date, category=category, account=account
         )
-        return TransactionUseCase(self.session).create(phone=phone, transaction=transaction)
+        TransactionUseCase(self.session).create(phone=phone, transaction=transaction)
+        return AccountUseCase(self.session).get_by_name(phone=phone, name=account.name)
 
     def _proccess_delete(self, phone, message: str):
         delete, attr, name = message.split(" ")
-        if attr == "transaccion":
+        if attr in {"transaccion", "transacción"}:
             return TransactionUseCase(self.session).delete_with_id(phone, name)
         elif attr == "cuenta":
             account = Account(name=name)
             return AccountUseCase(self.session).delete(phone, account)
-        elif attr == "categoria":
+        elif attr in {"categoria", "categoría"}:
             category = Category(name=name)
             return CategoryUseCase(self.session).delete(phone, category)
-        elif attr == "usuario":
-            user = User(name=name)
-            return UserUseCase(self.session).delete(user)
 
     def _proccess_list(self, phone: str, message: str):
         list, *attr = message.split(" ")
         if attr[0] == "transacciones":
-            if "categoria" in attr:  # list transactions with category xxx
+            if "categoria" in attr or "categoría" in attr:  # list transactions with category xxx
                 return TransactionUseCase(self.session).get_filtered_by_category(phone, attr[3])
             elif "cuenta" in attr:
                 return TransactionUseCase(self.session).get_filtered_by_account(phone, attr[3])
@@ -128,10 +134,12 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
         create, attr, name = message.split(" ")
         if attr == "cuenta":
             account = Account(name=name)
-            return AccountUseCase(self.session).create(phone=phone, account=account)
-        elif attr == "categoria":
+            AccountUseCase(self.session).create(phone=phone, account=account)
+            return AccountUseCase(self.session).get_by_name(phone=phone, name=account.name)
+        elif attr in {"categoria", "categoría"}:
             category = Category(name=name)
-            return CategoryUseCase(self.session).create(phone=phone, category=category)
+            CategoryUseCase(self.session).create(phone=phone, category=category)
+            return CategoryUseCase(self.session).get_by_name(phone=phone, name=category.name)
 
     def _proccess_ingreso(self, phone: str, message: str, date: datetime):
         ingreso, amount, forr, category, inn, account = message.split(" ")
@@ -140,7 +148,8 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
         transaction = Transaction(
             amount=amount, created_at=date, category=category, account=account
         )
-        return TransactionUseCase(self.session).create(phone=phone, transaction=transaction)
+        TransactionUseCase(self.session).create(phone=phone, transaction=transaction)
+        return AccountUseCase(self.session).get_by_name(phone=phone, name=account.name)
 
     def _proccess_transfer(self, phone: str, message: str, date: datetime):
         transfer, amount, fromm, account_origin, to, account_destiny = message.split(

@@ -27,3 +27,6 @@ class AccountUseCase:
         if Database(self.session).user_exist(user=user) is False:
             UserUseCase(self.session).create(user=user)
         return Database(self.session).list_accounts_with_phone(phone)
+    
+    def get_by_name(self, phone: str, name: str):
+        return Database(self.session).get_account_by_name(phone=phone, name=name)

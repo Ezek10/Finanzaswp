@@ -23,11 +23,6 @@ class Repository(ABC):
         pass
 
     @abstractmethod
-    def delete_user(user: User) -> None:
-        """borro una persona con phone y un user con email o name"""
-        pass
-
-    @abstractmethod
     def create_category(phone: str, category: Category) -> None:
         """creo una categoria teniendo el numero de telefono"""
         pass

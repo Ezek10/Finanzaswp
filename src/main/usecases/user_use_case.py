@@ -8,7 +8,7 @@ class UserUseCase:
         self.session = session
 
     def create(self, user: User):
-        print(f"Creating user {User.phone}")
+        print(f"Creating user {user.phone}")
         Database(self.session).create_user(user=user)
         message = """Hola!, veo que eres nuevo por aqui.
 La idea es que me puedas hablar para anotar tus gastos y manejar tus finanzas
@@ -36,8 +36,3 @@ Las *Categorias* son como vos queres organizar tus gastos como alquiler, comida,
             self.create(user=user)
         print("Updating user")
         Database(self.session).update_user(user=user)
-
-    def delete(self, user: User):
-        if Database(self.session).user_exist(user) is True:
-            print("Deleting user")
-            Database(self.session).delete_user(user=user)
