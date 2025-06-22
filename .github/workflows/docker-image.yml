@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - develop  # Cambiá si usás otra rama principal
+      - main  # Cambiá si usás otra rama principal
 
 jobs:
   deploy:
