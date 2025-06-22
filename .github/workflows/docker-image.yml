@@ -32,4 +32,4 @@ jobs:
 
       - name: Trigger Portainer webhook
         run: |
-          curl -X GET https://portainer.francelsoft.com/api/stacks/webhooks/7bb92b56-a812-48ac-ad00-8c1087b0113
+          curl -X GET https://portainer.francelsoft.com/api/stacks/webhooks/7bb92b56-a812-48ac-ad00-8c1087b01137
