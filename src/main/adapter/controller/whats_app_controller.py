@@ -19,9 +19,13 @@ async def verification(request: Request):
 
 
 @router.post("")
-async def read_message(request: WPRequest, session = Depends(get_db)):
+async def read_message(request: dict, session = Depends(get_db)):
     print(f"Request: {request}")
-    message = request.entry[0].changes[0].value.messages[0]
+    try:
+        request_parsed = WPRequest(**request)
+    except Exception as e:
+        return JSONResponse(status_code=422, content={"error": str(e)})
+    message = request_parsed.entry[0].changes[0].value.messages[0]
     message_id = message.id
     phone = message.from_
     timestamp = int(message.timestamp)
