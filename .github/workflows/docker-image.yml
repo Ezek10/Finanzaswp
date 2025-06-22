@@ -24,11 +24,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker buildx build --platform linux/amd64 -t ezemarcel/finanzaswp:latest .
-
-      - name: Push Docker image
-        run: |
-          docker push ezemarcel/finanzaswp:latest
+          docker buildx build --platform linux/amd64 -t ezemarcel/finanzaswp:latest . --push
 
       - name: Trigger Portainer webhook
         run: |
